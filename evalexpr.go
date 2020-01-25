@@ -1,16 +1,17 @@
 package evalexpr
 
 import (
-	"fmt"
-
 	"github.com/antonmedv/expr"
 )
 
+type Sources interface {
+	GetSource(string) (Source, error)
+}
 type Source interface {
 	GetValue() (interface{}, error)
 }
 
-func EvalWithSources(expression string, sources map[string]Source) (interface{}, map[string]interface{}, error) {
+func EvalWithSources(expression string, sources Sources) (interface{}, map[string]interface{}, error) {
 	// Parse
 	program, err := expr.Parse(expression)
 	if err != nil {
@@ -19,12 +20,15 @@ func EvalWithSources(expression string, sources map[string]Source) (interface{},
 	// Get Resources
 	env := make(map[string]interface{}, len(program.Constants))
 	for _, constant := range program.Constants {
-		// fmt.Printf("%v : %v\n", v, reflect.TypeOf(v))
-		if constantName, ok := constant.(string); ok {
-			if source, exists := sources[constantName]; exists {
-				env[constantName], _ = source.GetValue()
+		if constantReference, ok := constant.(string); ok {
+			if source, sourceErr := sources.GetSource(constantReference); sourceErr == nil {
+				tempValue, valueErr := source.GetValue()
+				if valueErr != nil {
+					return nil, nil, valueErr
+				}
+				env[constantReference] = tempValue
 			} else {
-				return nil, nil, fmt.Errorf("Undefined Source: %v", constantName)
+				return nil, nil, sourceErr
 			}
 		}
 	}
