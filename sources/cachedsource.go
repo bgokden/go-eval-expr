@@ -13,7 +13,7 @@ type CachedSources struct {
 	Cache *cache.Cache
 }
 
-func NewCachedSources(defaultExpration, cleanupInterval time.Duration) evalexpr.Sources {
+func NewCachedSources(defaultExpration, cleanupInterval time.Duration) *CachedSources {
 	return &CachedSources{
 		Cache: cache.New(defaultExpration, cleanupInterval),
 	}

@@ -10,7 +10,7 @@ type MemorySources struct {
 	SourceMap map[string]evalexpr.Source
 }
 
-func NewMemorySources() evalexpr.Sources {
+func NewMemorySources() *MemorySources {
 	return &MemorySources{
 		SourceMap: make(map[string]evalexpr.Source),
 	}
