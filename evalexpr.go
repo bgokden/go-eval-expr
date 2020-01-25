@@ -1,14 +1,29 @@
 package evalexpr
 
 import (
+	"fmt"
+
 	"github.com/antonmedv/expr"
 )
 
 type Sources interface {
 	GetSource(string) (Source, error)
 }
+
 type Source interface {
 	GetValue() (interface{}, error)
+}
+
+type Evaluator struct {
+	Expression string
+	Sources    Sources
+}
+
+func (e *Evaluator) Eval() (interface{}, map[string]interface{}, error) {
+	if e.Expression != "" && e.Sources != nil {
+		return EvalWithSources(e.Expression, e.Sources)
+	}
+	return nil, nil, fmt.Errorf("Evaluator not initialized yet")
 }
 
 func EvalWithSources(expression string, sources Sources) (interface{}, map[string]interface{}, error) {
