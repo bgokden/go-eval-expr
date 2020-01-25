@@ -40,6 +40,12 @@ func (ms *MemorySources) SetValue(reference string, value interface{}) error {
 	return ms.SetSource(reference, source)
 }
 
+func NewMemorySource(value interface{}) *MemorySource {
+	return &MemorySource{
+		Value: value,
+	}
+}
+
 type MemorySource struct {
 	Value interface{}
 }
